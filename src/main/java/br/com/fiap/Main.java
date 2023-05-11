@@ -9,10 +9,12 @@ import br.com.fiap.pessoa.model.Sexo;
 import br.com.fiap.sistema.model.Sistema;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Persistence;
 
 import javax.swing.*;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Random;
 
 public class Main {
@@ -40,13 +42,14 @@ public class Main {
 
         Role abrirCaixaBanco = new Role();
         abrirCaixaBanco.setSistema(bank)
-                .setNome("OPEN_CAIXA")
+                .setNome("BANK_OPEN_CAIXA")
                 .setDescricao("Abrir o caixa do Banco");
 
         Role fecharCaixaBanco = new Role();
         fecharCaixaBanco.setSistema(bank)
-                .setNome("CLOSE_CAIXA")
+                .setNome("BANK_CLOSE_CAIXA")
                 .setDescricao("Fechar o caixa do Banco");
+
 
         Profile gerenteBancario = new Profile();
         gerenteBancario.setNome("GERENTE_BANCARIO")
@@ -59,12 +62,12 @@ public class Main {
 
         Role abrirCaixaMercado = new Role();
         abrirCaixaMercado.setSistema(mercado)
-                .setNome("OPEN_CAIXA")
+                .setNome("MARKET_OPEN_CAIXA")
                 .setDescricao("Abrir o caixa do Mercado");
 
         Role fecharCaixaMercado = new Role();
         fecharCaixaMercado.setSistema(mercado)
-                .setNome("CLOSE_CAIXA")
+                .setNome("MARKET_CLOSE_CAIXA")
                 .setDescricao("Fechar o caixa do Mercado");
 
         Profile gerenteDeMercado = new Profile();
@@ -82,11 +85,19 @@ public class Main {
 
         try {
             manager.getTransaction().begin();
+            manager.persist(bene);
+            manager.persist(holding);
             manager.persist(benefrancis);
             manager.getTransaction().commit();
 
 
             //Métodos para consultar aqui:
+
+            //findById(manager);
+            findAll(manager);
+
+            manager.close();
+            factory.close();
 
 
         } catch (Exception e) {
@@ -107,6 +118,26 @@ public class Main {
         }
 
     }
+
+    private static void findById(EntityManager manager) {
+        Long id = Long.valueOf((JOptionPane.showInputDialog("Informe o ID do usuário:")));
+        User user = manager.find(User.class, id);
+
+        if (user != null) System.out.println(user);
+        else JOptionPane.showMessageDialog(null, "Não foi possível encontrar o usuário com o ID: " + id);
+    }
+
+    private static void findAll(EntityManager manager){
+        var hql = "FROM User";
+        List<User> list = manager.createQuery(hql, User.class).getResultList();
+        list.forEach(System.out::println);
+    }
+
+
+
+
+
+
 
     private static String geraCpf() {
         var sorteio = new Random();

@@ -7,9 +7,34 @@ import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
-
+@Entity
+@Table(name = "TB_PESSOA_JURIDICA",
+        uniqueConstraints = {
+            @UniqueConstraint(
+                    name = "UK_CNPJ",
+                    columnNames = "NR_CNPJ")
+        }
+)
+@DiscriminatorValue("PJ")
 public class PessoaJuridica extends Pessoa {
+
+    @Column(name = "NR_CNPJ")
     private String CNPJ;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "TB_SOCIOS", joinColumns ={
+            @JoinColumn(
+                    name = "ID_EMPRESA",
+                    referencedColumnName = "ID_PESSOA",
+                    foreignKey = @ForeignKey(name = "FK_EMPRESA")
+            )
+    },
+            inverseJoinColumns = @JoinColumn(
+                    name = "ID_SOCIO",
+                    referencedColumnName = "ID_PESSOA",
+                    foreignKey = @ForeignKey(name = "FK_SOCIO")
+            )
+    )
     private Set<Pessoa> socios = new LinkedHashSet<>();
     public String getCNPJ() {
         return CNPJ;

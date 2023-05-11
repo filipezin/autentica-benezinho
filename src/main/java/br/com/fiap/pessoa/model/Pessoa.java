@@ -1,17 +1,34 @@
 package br.com.fiap.pessoa.model;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
-
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@Table(name = "TB_PESSOA")
+@DiscriminatorColumn(name = "TP_PESSOA")
 public abstract class Pessoa {
 
+    @Id
+    @SequenceGenerator(
+            name = "SQ_PESSOA",
+            sequenceName = "SQ_PESSOA",
+            allocationSize = 1,
+            initialValue = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "SQ_PESSOA"
+    )
+    @Column(name = "ID_PESSOA")
     protected Long id;
 
-
+    @Column(name = "NM_PESSOA")
     protected String nome;
 
-
+    @Column(name = "DT_NASCIMENTO")
     protected LocalDate nascimento;
 
     public Pessoa() {
